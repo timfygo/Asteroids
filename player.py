@@ -4,12 +4,13 @@ import constants
 import pygame
 
 class Player(CircleShape):
-    def __init__(self, x, y):
+    def __init__(self, x, y, godmode):
         super().__init__(x, y, constants.PLAYER_RADIUS)
         self.rotation = 0
         self.cooldown = 0
         self.x = x
         self.y = y
+        self.godmode = godmode
     def triangle(self) -> list[pygame.Vector2]:
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
         right = pygame.Vector2(0, 1).rotate(self.rotation + 90) * self.radius / 1.5
@@ -49,9 +50,14 @@ class Player(CircleShape):
         if self.cooldown > 0:
             return
         else:
-            self.cooldown = constants.PLAYER_SHOOT_COOLDOWN_SECONDS
+            if self.godmode == False:
+                self.cooldown = constants.PLAYER_SHOOT_COOLDOWN_SECONDS
+            elif self.godmode == True:
+                self.cooldown = 0
             bullet = Shot(self.position.x,  self.position.y)
             vector = pygame.Vector2(0, 1).rotate(self.rotation)
             bullet.velocity = vector * constants.PLAYER_SHOOT_SPEED
-            
-
+    def reset(self, x, y):
+        self.position = pygame.Vector2(x, y)
+        self.velocity = pygame.Vector2(0, 0)
+        self.rotation = 0
